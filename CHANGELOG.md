@@ -9,8 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- `DynamicPin` with dynamically changed mode, remove `AF` constants [#372]
 - `IoPin` for `Output<OpenDrain>> <-> Input<Floating>>` [#374]
 
+[#372]: https://github.com/stm32-rs/stm32f4xx-hal/pull/374
 [#374]: https://github.com/stm32-rs/stm32f4xx-hal/pull/374
 
 ### Changed
