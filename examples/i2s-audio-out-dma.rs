@@ -52,9 +52,11 @@ use stm32f4xx_hal::delay::Delay;
 use stm32f4xx_hal::dma::config::DmaConfig;
 use stm32f4xx_hal::dma::MemoryToPeripheral;
 use stm32f4xx_hal::dma::{Stream5, StreamsTuple, Transfer};
-use stm32f4xx_hal::gpio::gpioa::PA4;
-use stm32f4xx_hal::gpio::gpioc::{PC10, PC12, PC7};
-use stm32f4xx_hal::gpio::Alternate;
+use stm32f4xx_hal::gpio::{
+    gpioa::PA4,
+    gpioc::{PC10, PC12, PC7},
+    Alternate, PushPull,
+};
 use stm32f4xx_hal::i2c::I2c;
 use stm32f4xx_hal::i2s::I2s;
 use stm32f4xx_hal::pac::{interrupt, Interrupt};
@@ -215,10 +217,10 @@ type I2sDmaTransfer = Transfer<
         I2s<
             SPI3,
             (
-                PA4<Alternate<6>>,
-                PC10<Alternate<6>>,
-                PC7<Alternate<6>>,
-                PC12<Alternate<6>>,
+                PA4<Alternate<PushPull, 6>>,
+                PC10<Alternate<PushPull, 6>>,
+                PC7<Alternate<PushPull, 6>>,
+                PC12<Alternate<PushPull, 6>>,
             ),
         >,
         TransmitMode<Data16Frame16>,

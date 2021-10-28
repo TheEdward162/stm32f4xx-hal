@@ -23,7 +23,6 @@
 //! Each GPIO pin can be set to various modes:
 //!
 //! - **Alternate**: Pin mode required when the pin is driven by other peripherals
-//! - **AlternateOD**: Pin mode required when the pin is driven by other peripherals and has open drain
 //! - **Analog**: Analog input to be used with ADC.
 //! - **Dynamic**: Pin mode is selected at runtime. See changing configurations for more details
 //! - Input
@@ -67,7 +66,7 @@ use crate::pac::EXTI;
 use crate::syscfg::SysCfg;
 
 mod convert;
-pub(crate) use convert::{Const, SetAlternate, SetAlternateOD};
+pub(crate) use convert::{Const, SetAlternate};
 mod partially_erased;
 pub use partially_erased::{PEPin, PartiallyErasedPin};
 mod erased;
@@ -96,10 +95,7 @@ pub trait PinExt {
 }
 
 /// Some alternate mode (type state)
-pub struct Alternate<const A: u8>;
-
-/// Some alternate mode in open drain configuration (type state)
-pub struct AlternateOD<const A: u8>;
+pub struct Alternate<Otype, const A: u8>(PhantomData<Otype>);
 
 /// Input mode (type state)
 pub struct Input<MODE> {
@@ -308,7 +304,7 @@ impl<const P: char, const N: u8> Pin<Output<OpenDrain>, P, N> {
     }
 }
 
-impl<const P: char, const N: u8, const A: u8> Pin<Alternate<A>, P, N> {
+impl<const P: char, const N: u8, const A: u8> Pin<Alternate<PushPull, A>, P, N> {
     /// Set pin speed
     pub fn set_speed(self, speed: Speed) -> Self {
         let offset = 2 * { N };
@@ -336,9 +332,9 @@ impl<const P: char, const N: u8, const A: u8> Pin<Alternate<A>, P, N> {
     }
 }
 
-impl<const P: char, const N: u8, const A: u8> Pin<Alternate<A>, P, N> {
+impl<const P: char, const N: u8, const A: u8> Pin<Alternate<PushPull, A>, P, N> {
     /// Turns pin alternate configuration pin into open drain
-    pub fn set_open_drain(self) -> Pin<AlternateOD<A>, P, N> {
+    pub fn set_open_drain(self) -> Pin<Alternate<OpenDrain, A>, P, N> {
         let offset = { N };
         unsafe {
             (*Gpio::<P>::ptr())

@@ -401,7 +401,7 @@ use crate::gpio::gpiof::*;
 #[allow(unused)]
 #[cfg(feature = "gpioi")]
 use crate::gpio::gpioi::*;
-use crate::gpio::{gpioa::*, gpiob::*, Alternate, AlternateOD};
+use crate::gpio::{gpioa::*, gpiob::*, Alternate};
 #[allow(unused)]
 use crate::gpio::{gpioc::*, gpioh::*};
 
@@ -414,8 +414,7 @@ pub trait PinC4<TIM> {}
 macro_rules! channel_impl {
     ( $( $TIM:ident, $PINC:ident, $PINX:ident, $AF:literal; )+ ) => {
         $(
-            impl $PINC<crate::pac::$TIM> for $PINX<Alternate<$AF>> {}
-            impl $PINC<crate::pac::$TIM> for $PINX<AlternateOD<$AF>> {}
+            impl<Otype> $PINC<crate::pac::$TIM> for $PINX<Alternate<Otype, $AF>> {}
         )+
     };
 }
