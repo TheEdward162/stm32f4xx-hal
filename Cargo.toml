@@ -133,7 +133,7 @@ stm32f412 = ["stm32f4/stm32f412", "device-selected",
     "usart3",
 ]
 stm32f413 = ["stm32f4/stm32f413", "device-selected",
-    "can1", "can2",
+    "can1", "can2", "can3",
     "dac",
     "fsmc",
     "fmpi2c1",
@@ -177,7 +177,7 @@ stm32f417 = ["stm32f4/stm32f407", "device-selected",
     "usart3", "uart4", "uart5",
 ]
 stm32f423 = ["stm32f4/stm32f413", "device-selected",
-    "can1", "can2",
+    "can1", "can2", "can3",
     "dac",
     "fsmc",
     "fmpi2c1",
@@ -307,6 +307,7 @@ adc2 = []
 adc3 = []
 can1 = []
 can2 = []
+can3 = []
 dac = []
 fmc = []
 fsmc = []
@@ -392,7 +393,7 @@ required-features = ["tim2"] # stm32f411
 
 [[example]]
 name = "can-send"
-required-features = ["can", "can1", "can2"] # stm32f405
+required-features = ["can", "stm32f405"]
 
 [[example]]
 name = "i2s-audio-out"

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [breaking-change] Remove `Can::new_unchecked`. Add `Can::tx` and `Can::rx` [#372]
 - [breaking-change] Make `Alternate` generic over `Otype` instead of separate `Alternate` and `AlternateOD` [#372]
 
 ### Added
