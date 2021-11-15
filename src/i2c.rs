@@ -1,5 +1,5 @@
 use core::ops::Deref;
-use embedded_hal::blocking::i2c::{Read, Write, WriteRead};
+use embedded_hal::blocking::i2c::{Read, Write, WriteIter, WriteIterRead, WriteRead};
 
 use crate::pac::i2c1;
 use crate::rcc::{Enable, Reset};
@@ -421,7 +421,7 @@ where
 }
 
 trait I2cCommon {
-    fn write_bytes(&mut self, addr: u8, bytes: &[u8]) -> Result<(), Error>;
+    fn write_bytes<B: IntoIterator<Item = u8>>(&mut self, addr: u8, bytes: B) -> Result<(), Error>;
 
     fn send_byte(&self, byte: u8) -> Result<(), Error>;
 
@@ -432,7 +432,7 @@ impl<I2C, PINS> I2cCommon for I2c<I2C, PINS>
 where
     I2C: Instance,
 {
-    fn write_bytes(&mut self, addr: u8, bytes: &[u8]) -> Result<(), Error> {
+    fn write_bytes<B: IntoIterator<Item = u8>>(&mut self, addr: u8, bytes: B) -> Result<(), Error> {
         // Send a START condition
         self.i2c.cr1.modify(|_, w| w.start().set_bit());
 
@@ -466,7 +466,7 @@ where
 
         // Send bytes
         for c in bytes {
-            self.send_byte(*c)?;
+            self.send_byte(c)?;
         }
 
         // Fallthrough is success
@@ -512,6 +512,25 @@ where
     type Error = Error;
 
     fn write_read(&mut self, addr: u8, bytes: &[u8], buffer: &mut [u8]) -> Result<(), Self::Error> {
+        WriteIterRead::write_iter_read(self, addr, bytes.into_iter().copied(), buffer)
+    }
+}
+
+impl<I2C, PINS> WriteIterRead for I2c<I2C, PINS>
+where
+    I2C: Instance,
+{
+    type Error = Error;
+
+    fn write_iter_read<B>(
+        &mut self,
+        addr: u8,
+        bytes: B,
+        buffer: &mut [u8],
+    ) -> Result<(), Self::Error>
+    where
+        B: IntoIterator<Item = u8>
+    {
         self.write_bytes(addr, bytes)?;
         self.read(addr, buffer)?;
 
@@ -526,6 +545,20 @@ where
     type Error = Error;
 
     fn write(&mut self, addr: u8, bytes: &[u8]) -> Result<(), Self::Error> {
+        WriteIter::write(self, addr, bytes.into_iter().copied())
+    }
+}
+
+impl<I2C, PINS> WriteIter for I2c<I2C, PINS>
+where
+    I2C: Instance,
+{
+    type Error = Error;
+
+    fn write<B>(&mut self, addr: u8, bytes: B) -> Result<(), Self::Error>
+    where
+        B: IntoIterator<Item = u8>
+    {
         self.write_bytes(addr, bytes)?;
 
         // Send a STOP condition
